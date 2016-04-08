@@ -1,0 +1,28 @@
+From 8163ec618f05d7fabe9b1bfae1e2c7575ed27a0a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E7=A7=8B=E5=8F=B6=E9=9A=8F=E9=A3=8Eivan?=
+ <yanziily@gmail.com>
+Date: Sun, 3 Jan 2016 21:28:59 +0800
+Subject: [PATCH] Mobile data patch mt6753
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Change-Id: I3d9ff9bcb8c7ee46b5820d9ba1be0406236c09fb
+Signed-off-by: 秋叶随风ivan <yanziily@gmail.com>
+
+    fixed mobile data on MT6753
+    
+    Change-Id: Ieaa51f8b3d89733727c4e63baa50710b1adc0b83
+
+diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
+index 330679e..9ba3e64 100644
+--- a/src/java/com/android/internal/telephony/RIL.java
++++ b/src/java/com/android/internal/telephony/RIL.java
+@@ -3900,6 +3900,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
+ 	      dataCall.suggestedRetryTime = p.readInt();
+             dataCall.cid = p.readInt();
+             dataCall.active = p.readInt();
++	    dataCall.mtu = p.readInt(); // fix for mobile data on MT6753 SoC
+             dataCall.type = p.readString();
+             dataCall.ifname = p.readString();
+             if ((dataCall.status == DcFailCause.NONE.getErrorCode()) &&

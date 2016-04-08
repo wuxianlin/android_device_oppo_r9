@@ -1,0 +1,5 @@
+This is patch directory
+
+cd WORKING_DIR
+sh device/oppo/r9/patches/install.sh
+sh device/oppo/r9/patches/uninstall.sh

@@ -1,0 +1,66 @@
+#
+# VoLTE related services (Begin)
+#
+
+on property:ril.volte.stack=1
+    start volte_stack
+    
+on property:ril.volte.stack=0
+    stop volte_stack
+    
+on property:ril.volte.ua=1
+    start volte_ua
+
+on property:ril.volte.ua=0
+    stop volte_ua
+    
+on property:ril.volte.imcb=1
+    start volte_imcb
+
+on property:ril.volte.imcb=0
+    stop volte_imcb
+
+# WFCA service should be unmarked when WFC feature enable
+#on property:ril.volte.wfca=1
+#    start volte_wfca
+#
+#on property:ril.volte.wfca=0
+#    stop volte_wfca
+
+service volte_ua /system/bin/volte_ua
+    class core
+    socket volte_ua stream 660 root system
+    user system
+    group system log inet radio
+    oneshot
+    disabled
+
+service volte_stack /system/bin/volte_stack
+    class core
+    socket volte_stack stream 660 root system
+    user root
+    group system log inet radio
+    oneshot
+    disabled
+
+service volte_imcb /system/bin/volte_imcb
+    class core
+    socket volte_imsa1 stream 660 root radio
+    socket volte_imsa2 stream 660 root radio
+    socket volte_ut stream 660 root radio
+    user system
+    group system log inet radio
+    oneshot
+    disabled
+
+# WFCA service should be unmarked when WFC feature enable
+#service volte_wfca /system/bin/volte_wfca
+#    class core
+#    socket volte_wfca stream 660 root system
+#    user root
+#    group system log inet radio net_admin root
+#    disabled
+
+#
+# VoLTE related services (End)
+#
