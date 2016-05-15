@@ -32,6 +32,7 @@ PRODUCT_PACKAGES += \
 
 # Keyboard layout
 PRODUCT_COPY_FILES += \
+     $(LOCAL_PATH)/keylayout/mtk-tpd-s1302.kl:system/usr/keylayout/mtk-tpd-s1302.kl \
      $(LOCAL_PATH)/keylayout/mtk-kpd.kl:system/usr/keylayout/mtk-kpd.kl \
      $(LOCAL_PATH)/keylayout/ACCDET.kl:system/usr/keylayout/ACCDET.kl \
      $(LOCAL_PATH)/keylayout/AVRCP.kl:system/usr/keylayout/AVRCP.kl
