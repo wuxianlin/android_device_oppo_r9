@@ -15,10 +15,10 @@
 <spnOverride numeric="20820" spn="F-Bouygues Telecom"/>
 <spnOverride numeric="20888" spn="F - Contact"/>
 <spnOverride numeric="20815" spn="Free"/>
-<spnOverride numeric="20801" spn="Orange"/>
+<spnOverride numeric="20801" spn="Orange F"/>
 <spnOverride numeric="20802" spn="F-Contact"/>
-<spnOverride numeric="20810" spn="SFR"/>
-<spnOverride numeric="20809" spn="SFR"/>
+<spnOverride numeric="20810" spn="F SFR"/>
+<spnOverride numeric="20809" spn="F SFR"/>
 <spnOverride numeric="20813" spn="F - Contact"/>
 <spnOverride numeric="20800" spn="Orange"/>
 <spnOverride numeric="20803" spn="MobiquiThings"/>

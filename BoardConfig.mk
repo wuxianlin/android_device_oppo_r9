@@ -42,7 +42,7 @@ BOARD_HARDWARE_CLASS += \
 BOARD_KERNEL_CMDLINE := bootopt=64S3,32N2,64N2 androidboot.selinux=permissive
 BOARD_KERNEL_BASE := 0x40078000
 BOARD_KERNEL_PAGESIZE := 2048
-BOARD_MKBOOTIMG_ARGS := --board 1459731986 --ramdisk_offset 0x04f88000 --second_offset 0x00e88000 --tags_offset 0x03f88000
+BOARD_MKBOOTIMG_ARGS := --board 1474558560 --ramdisk_offset 0x04f88000 --second_offset 0x00e88000 --tags_offset 0x03f88000
 TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/kernel
 
 # Disable memcpy opt (for audio libraries)
@@ -56,6 +56,7 @@ USE_OPENGL_RENDERER := true
 COMMON_GLOBAL_CFLAGS += -DNO_SECURE_DISCARD
 
 # MTK Hardware
+BOARD_USES_MTK_HARDWARE := true
 BOARD_HAS_MTK_HARDWARE := true
 MTK_HARDWARE := true
 BOARD_USES_LEGACY_MTK_AV_BLOB := true

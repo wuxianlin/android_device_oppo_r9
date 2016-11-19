@@ -28,7 +28,7 @@
       authtype="3"
       user="ctnet@mycdma.cn" 
       password="vnet.mobi" 
-      type="default,dun" 
+      type="default,hipri"
       ppp="#777"
       protocol="IPV4V6"
       roaming_protocol="IPV4V6"
@@ -49,12 +49,16 @@
       protocol="IPV4V6"
       roaming_protocol="IPV4V6"
   />
+
+<!-- 
+zhaokai@Network.framework,2016-08-04,delete ia type to solve particular apn can`t registe to LTE sometimes.
+-->
   <apn carrier="CTNET" 
       mcc="460" 
       mnc="11" 
       apn="ctnet"  
       authtype="3"
-      type="ia,default,dun,supl" 
+      type="default,hipri,supl"
       ppp="#777"
       protocol="IPV4V6"
       roaming_protocol="IPV4V6"
@@ -82,7 +86,7 @@
       apn="ctnet" 
       user="ctnet@mycdma.cn" 
       password="vnet.mobi" 
-      type="default,dun"
+      type="default,hipri"
       protocol="IPV4V6"
       roaming_protocol="IPV4V6"
   />
@@ -106,7 +110,7 @@
       apn="ctnet" 
       user="ctnet@mycdma.cn" 
       password="vnet.mobi" 
-      type="default,dun" 
+      type="default,hipri"
   />
 
   <apn carrier="CTWAP" 

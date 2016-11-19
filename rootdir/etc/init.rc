@@ -98,7 +98,10 @@ loglevel 6 ####
     mount cgroup none /dev/memcg memory
 
     write /proc/sys/kernel/panic_on_oops 1
-    write /proc/sys/kernel/hung_task_timeout_secs 0
+#ifdef VENDOR_EDIT
+#//fanhui@PhoneSW.BSP 2016-04-14 enable the kernel hung task detect feature
+    write /proc/sys/kernel/hung_task_timeout_secs 60
+#endif
     write /proc/cpu/alignment 4
     write /proc/sys/kernel/sched_latency_ns 10000000
     write /proc/sys/kernel/sched_wakeup_granularity_ns 2000000
@@ -177,6 +180,12 @@ loglevel 6 ####
     chmod 0666 /dev/mtk-kpd
     chown root system /dev/mtk-kpd
 #endif /*VENDOR_EDIT*/
+
+#ifdef VENDOR_EDIT
+# gyx@bsp.drv add for tp 
+    chown system system /proc/touchpanel/oppo_tp_limit_enable
+	chown system system /proc/touchpanel/oppo_tp_limit_area
+#endif
 
 
 # Healthd can trigger a full boot from charger mode by signaling this
@@ -440,6 +449,7 @@ on boot
 	chown system system /sys/devices/virtual/mtk_disp_mgr/mtk_disp_mgr/silence
     chown system system /sys/devices/virtual/mtk_disp_mgr/mtk_disp_mgr/LCM_HBM
     chmod 0664 /sys/devices/virtual/mtk_disp_mgr/mtk_disp_mgr/LCM_HBM
+	chown system system /sys/devices/virtual/mtk_disp_mgr/mtk_disp_mgr/LCM_CABC
 #endif /*VENDOR_EDIT*/
     chown system system /sys/class/leds/button-backlight/brightness
     chown system system /sys/class/leds/jogball-backlight/brightness
@@ -448,6 +458,9 @@ on boot
     chown system system /sys/class/leds/blue/brightness
 #ifdef VENDOR_EDIT//Fanhong.Kong@ProDrv.CHG,modified 2015.9.30 for charging  
     chown system system /sys/class/leds/white/brightness
+#endif /* VENDOR_EDIT */
+#ifdef VENDOR_EDIT//OPPO 2016-02-23 sjc Add for charging 
+    chown system system /proc/charger_cycle
 #endif /* VENDOR_EDIT */	
     chown system system /sys/class/leds/red/device/grpfreq
     chown system system /sys/class/leds/red/device/grppwm
@@ -558,6 +571,15 @@ service adbd /sbin/adbd --root_seclabel=u:r:su:s0
     socket adbd stream 660 system system
     disabled
     seclabel u:r:adbd:s0
+
+
+#ifdef VENDOR_EDIT
+#Geliang.Tang@Swdp.Android.OppoFeature.UsageRecord, 2014/08/18, add provide a function to indentify the usage of the phone.
+service block-mode /system/bin/sh /init.oppo.block.sh
+    class core
+    user root
+    oneshot
+#endif /* VENDOR_EDIT */
 
 # adbd on at boot in emulator
 on property:ro.kernel.qemu=1

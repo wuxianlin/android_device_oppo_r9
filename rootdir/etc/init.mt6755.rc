@@ -16,6 +16,9 @@ import init.nvdata.rc
 import init.microtrust.rc
 
 on early-init
+    write /proc/ppm/policy/userlimit_min_cpu_freq "1 1508000"
+    write /proc/ppm/policy/userlimit_min_cpu_core "1 1"
+    write /proc/bootprof "INIT:early-init"
     mount debugfs debugfs /sys/kernel/debug
     chmod 0755 /sys/kernel/debug
 
@@ -72,6 +75,9 @@ on init
     write /proc/sys/net/core/wmem_max 2097152
     write /proc/sys/net/core/rmem_max 2097152
 
+on late-init
+    write /proc/bootprof "INIT:late-init"
+
 # mount different fs start
 
 on property:persist.mediatek.fg.disable=1
@@ -108,6 +114,7 @@ on charger
 
 on fs
     write /proc/bootprof "INIT:Mount_START"
+    write /sys/kernel/debug/tracing/trace_marker "B|1|Mount"
     mount_all /fstab.mt6755
     exec /system/bin/tune2fs -O has_journal -u 10010 -r 4096 /dev/block/platform/mtk-msdc.0/by-name/userdata
 #ifdef VENDOR_EDIT//Bingshu.Zhou@Swdp.Android.Boot.Init, 2015/12/22, Modify for using chmod instead of exec system/bin/chmod
@@ -153,6 +160,7 @@ on fs
 #endif 
 
 on post-fs
+    write /proc/bootprof "INIT:post-fs"
     #change permissions for mediaserver
     chown root media /proc/clkmgr/mipi_test
 
@@ -170,6 +178,7 @@ on post-fs
 
 # change owner
     chown system system /proc/bootprof
+    chmod 0664 /proc/bootprof
     chown root system /proc/mtprof/cputime
     chown root system /proc/mtprof/reboot_pid
 
@@ -183,6 +192,7 @@ on post-fs
     chmod 0771 /system/bin/sbchk
 
 on post-fs-data
+    write /proc/bootprof "INIT:post-fs-data"
     chown system system /persist
     chmod 0771 /persist
 
@@ -385,6 +395,9 @@ on post-fs-data
     chown system system /sys/class/misc/m_step_c_misc/step_cdelay
     chown system system /sys/class/misc/m_step_c_misc/step_cbatch
     chown system system /sys/class/misc/m_step_c_misc/step_cflush
+
+    chmod 0664 /sys/bus/platform/drivers/step_counter/debounce_step_num
+    chown system root /sys/bus/platform/drivers/step_counter/debounce_step_num
 
     #ifdef VENDOR_EDIT
     #zhihong.lu@BSP.sensor, Add for ALS SensorSelfTest
@@ -813,6 +826,7 @@ on post-fs-data
 # -----------------------
 
 on boot
+    write /proc/bootprof "INIT:boot"
 
     # xlog
     start xlogboot
@@ -856,17 +870,23 @@ on boot
 
 #ifdef VENDOR_EDIT
 #Fanhong.Kong@ProDrv.CHG, 2016/1/19, add for oppocustom 	
-    chmod 664 /proc/oppoCustom/Sensor 
-    chown system root /proc/oppoCustom/Sensor 
-	
-    chmod 664 /proc/oppoCustom/nPlUsbEnumEnabled 
-    chown system root /proc/oppoCustom/nPlUsbEnumEnabled 
-	
-    chmod 664 /proc/oppoCustom/nUsbAutoSwitch 
-    chown system root /proc/oppoCustom/nUsbAutoSwitch 
-    
-    chmod 664 /sys/bus/platform/drivers/gyroscope/cali 
-    chown system root /sys/bus/platform/drivers/gyroscope/cali 
+    chmod 664 /proc/oppoCustom/Sensor
+    chown system root /proc/oppoCustom/Sensor
+
+    chmod 664 /proc/oppoCustom/nPlUsbEnumEnabled
+    chown system root /proc/oppoCustom/nPlUsbEnumEnabled
+
+    chmod 664 /proc/oppoCustom/nUsbAutoSwitch
+    chown system root /proc/oppoCustom/nUsbAutoSwitch
+
+    chmod 664 /sys/bus/platform/drivers/gyroscope/cali
+    chown system root /sys/bus/platform/drivers/gyroscope/cali
+
+    chmod 664 /sys/bus/platform/drivers/step_counter/debounce_step_num
+    chown system root /sys/bus/platform/drivers/step_counter/debounce_step_num
+#hufeng add for camera flash calibration
+    chmod 664 /proc/oppoCustom/oppo_camera 
+    chown media root /proc/oppoCustom/oppo_camera 
 #endif	
 	
     # Permission for hibernation
@@ -966,20 +986,27 @@ on boot
     chown system radio /dev/ttyGS3
 
 on property:vold.decrypt=trigger_reset_main
+    write /proc/bootprof "INIT:vold.decrypt=trigger_reset_main"
     start stop_modem
 
+on property:vold.decrypt=trigger_post_fs_data
+    write /proc/bootprof "INIT:vold.decrypt=trigger_post_fs_data"
+
 on property:vold.decrypt=trigger_restart_min_framework
+    write /proc/bootprof "INIT:vold.decrypt=trigger_restart_min_framework"
     start start_modem
     start msensord
     start permission_check
 
 on property:vold.decrypt=trigger_restart_framework
+    write /proc/bootprof "INIT:vold.decrypt=trigger_restart_framework"
     start nvram_daemon
     start start_modem
     start msensord
     start permission_check
 
 on property:vold.decrypt=trigger_shutdown_framework
+    write /proc/bootprof "INIT:vold.decrypt=trigger_shutdown_framework"
     start stop_modem
     start swapoff_action
 
@@ -1051,6 +1078,11 @@ service bugreport /system/bin/dumpstate -d -p -B \
 # start ged_srv
 on property:sys.boot_completed=1
     start ged_srv
+
+on property:sys.boot_completed=1
+    # restore perf. parameters
+    write /proc/ppm/policy/userlimit_min_cpu_freq "1 -1"
+    write /proc/ppm/policy/userlimit_min_cpu_core "1 -1"
 
 service ged_srv /system/bin/ged_srv
     class core
@@ -1353,10 +1385,13 @@ service cmmb /system/bin/cmmbsp
     group system audio camera graphics inet net_bt net_bt_admin net_bw_acct media
     ioprio rt 4
 
-service enableswap /system/bin/sh /enableswap.sh
-    class core
-    oneshot
-    seclabel u:r:enableswap:s0
+#ifdef VENDOR_EDIT
+#Jiemin.Zhu@Swdp.Android.Performance.Memory, 2016/04/28, disable zram since all phones' ram is more than 2G
+#service enableswap /system/bin/sh /enableswap.sh
+#    class core
+#    oneshot
+#    seclabel u:r:enableswap:s0
+#endif /* VENDOR_EDIT */
 
 service swapoff_action /system/bin/sh /disableswap.sh
     class main
@@ -1504,6 +1539,7 @@ service md_monitor /system/bin/md_monitor
     class main
     user system
     group system radio sdcard_rw inet sdcard_r media_rw
+
 #
 #sensor service (begin)
 #
@@ -1534,6 +1570,13 @@ service memsicd3416x /system/bin/memsicd3416x
 	 user system
     group system
     class main
+	
+service memsicd3530x /system/bin/memsicd3530x
+     disabled
+	 user system
+    group system
+    class main
+	
 service akmd8975 /system/bin/akmd8975
     disabled
     user system
@@ -1557,6 +1600,13 @@ service psensord /system/bin/psensord
     user system
     group system
     class main
+	
+#ifdef VENDOR_EDIT yixue.ge add
+service bspCriticalLog /system/bin/bspCriticalLog
+    user system
+    group system
+    class main
+#endif
 
 #zhihong.lu@BasicDrv.Sensor, add for sensor calibration
 service nvramsensord /system/bin/nvramsensord
@@ -1606,7 +1656,14 @@ service geomagneticd /system/bin/geomagneticd
     disabled
     user root
     group system input
+	class main
 
+service yamaha537d /system/bin/yamaha537d
+    disabled
+    user root
+    group system input
+	class main
+	
 service mpud6050 /system/bin/mpud6050
     oneshot
     user system
@@ -1866,4 +1923,14 @@ on property:service.bootanim.exit=1
     write /proc/ppm/policy/ut_fix_freq_idx "-1 -1"
 #endif /* VENDOR_EDIT */
 
+#ifdef VENDOR_EDIT
+#xiaocheng.li@Swdp.Shanghai, 2016/1/25, Add hypnus service
+service hypnus_context /system/bin/sh /system/etc/init.oppo.hypnus.sh
+    user root
+    disabled
+    oneshot
+
+on property:sys.enable.hypnus=*
+    start hypnus_context
+#endif
 

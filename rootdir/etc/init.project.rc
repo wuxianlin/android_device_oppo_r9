@@ -234,5 +234,19 @@ on property:persist.sys.oppo.otg_support=true
 on property:persist.sys.oppo.otg_support=false
 	write /sys/class/power_supply/usb/otg_switch 0
 	write /sys/class/udc/musb-hdrc/device/idpolling 0
+	
+on property:ro.build.type=user
+	write /proc/sys/kernel/printk  "1 4 1 6"
 #endif
 
+#ifdef VENDOR_EDIT
+#fangpan@Swdp.shanghai, 2016/01/20, enable the procmod.ko when boot up
+on property:persist.sys.procmon_enable=1
+    insmod /system/lib/modules/procmon.ko -f
+    chown root system /sys/module/procmon/parameters/cpuload_thresh
+    chown root system /sys/module/procmon/parameters/io_thresh
+    chown root system /sys/module/procmon/parameters/mem_thresh
+    chown root system /sys/module/procmon/parameters/binder_thresh
+    chown root system /sys/module/procmon/parameters/trigger_time
+    chown root system /sys/module/procmon/parameters/enable
+# endif /* VENDOR_EDIT */

@@ -73,6 +73,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/android.hardware.microphone.xml:system/etc/permissions/android.hardware.microphone.xml \
     frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
     $(LOCAL_PATH)/configs/android.hardware.camera.xml:system/etc/permissions/android.hardware.camera.xml \
+    frameworks/native/data/etc/android.hardware.ethernet.xml:system/etc/permissions/android.hardware.ethernet.xml \
     frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
     frameworks/native/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
     frameworks/native/data/etc/android.hardware.wifi.direct.xml:system/etc/permissions/android.hardware.wifi.direct.xml \
@@ -109,8 +110,13 @@ PRODUCT_PACKAGES += \
     audio.a2dp.default \
     audio.usb.default \
     audio.r_submix.default \
+    audio_policy.default \
     libaudio-resampler \
-    tinymix
+    libtinycompress \
+    libtinyxml
+
+PRODUCT_PACKAGES += \
+    libcurl
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/audio/audio_policy.conf:system/etc/audio_policy.conf \
@@ -153,8 +159,7 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.kernel.android.checkjni=0 \
-    ro.telephony.ril_class=MediaTekRIL \
-    ro.telephony.ril.config=fakeiccid
+    ro.telephony.ril_class=MediaTekRIL
 
 PRODUCT_PACKAGES += \
     librs_jni \
@@ -165,9 +170,6 @@ PRODUCT_PACKAGES += \
     charger \
     charger_res_images
 
-PRODUCT_PACKAGES += \
-    libnl_2 \
-    libtinyxml
 
 # Filesystem management tools
 PRODUCT_PACKAGES += \
